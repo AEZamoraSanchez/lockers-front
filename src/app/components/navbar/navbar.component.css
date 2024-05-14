@@ -9,7 +9,11 @@ nav{
   padding: 5px 20px;
   align-items: center;
 
-  animation: navmenu 1.4s ease-in-out;
+  animation: navmenu 1s ease-in-out;
+
+  @media (min-width: 540px) {
+    animation: navmenu .8s ease-in-out;
+  }
 
 }
 

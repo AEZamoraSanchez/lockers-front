@@ -1,0 +1,58 @@
+main {
+  padding: 15px 10px;
+  display: grid;
+  background-color: aqua;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-rows: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  min-height: 100vh;
+}
+
+section {
+  background-color: antiquewhite;
+  aspect-ratio: 1/1;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  padding: 15px;
+  overflow-y: auto;
+  position: relative;
+  /* width: 90%; */
+}
+
+h2 {
+  place-self: center;
+  word-break: break-all;
+  font-size: 20px;
+  font-weight: 580;
+}
+
+h3{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.newS {
+  font-size: 50px;
+  font-weight: 400;
+}
+
+fa-icon{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  /* z-index: 10; */
+}
+
+.modal-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: rgba(79, 79, 79, 0.6);
+
+}

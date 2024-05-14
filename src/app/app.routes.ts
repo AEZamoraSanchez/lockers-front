@@ -11,6 +11,7 @@ export const routes: Routes = [
     {path: "sign-up", component: SignUpComponent},
     {path: "login", component: LoginComponent},
     {path: "", component: HomeComponent},
+    {path: ":id", component: HomeComponent},
     {path: "**", redirectTo:''}
 ];
 

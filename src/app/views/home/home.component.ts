@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { StorageService } from '../../../utils/services/storage.service';
 import { Router } from '@angular/router';
 import { UserService } from '../../../utils/services/user.service';
@@ -7,21 +7,29 @@ import { userMain } from '../../../utils/interfaces/userInterfaces/userMain.inte
 import { Store, StoreModule } from '@ngrx/store';
 import { updateUserMain, verReducer } from '../../../stores/userStore/user.actions';
 import { CommonModule } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     CommonModule,
+    FontAwesomeModule
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewChecked {
 
   private _router : Router;
   user$ ? : Observable<userMain | null>
   user : any;
+  faEllipsisV = faEllipsisV;
+  showModal = signal(true);
+  contentHeight ? : number;
+  @ViewChild('mainElement') mainElement ? : ElementRef;
+
 
   constructor(
     private _storageService: StorageService,
@@ -52,8 +60,26 @@ export class HomeComponent implements OnInit {
 
   }
 
+  ngAfterViewChecked
+  () {
+    const mainHeight = this.mainElement?.nativeElement?.offsetHeight;
+    const modalContainer = document.querySelector('.modal-container');
+    if (modalContainer) {
+      (modalContainer as HTMLElement).style.height = `${mainHeight + 80}px`;
+    }
+  }
+
+
   mostrarReducer(){
-    this.store.dispatch(verReducer())
+    // this.store.dispatch(verReducer())
     console.log(this.user)
+  }
+
+  closeModal() {
+    this.showModal.set(false)
+  }
+
+  openModal() {
+    this.showModal.set(true)
   }
 }

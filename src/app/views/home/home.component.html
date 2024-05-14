@@ -1,11 +1,40 @@
 
-<button (click)="mostrarReducer()" > ver reducer</button>
-<!-- @if(user){
-  <div>
-    <h2>Id: {{ user?.user?.id }}</h2>
-    <h2>Nombre: {{ user?.user?.username }}</h2>
-    <h2>Email: {{ user?.user?.email }}</h2>
-  </div>
-} -->
+<!-- <button (click)="mostrarReducer()" > ver reducer</button> -->
 
+<main #mainElement>
+  <section>
+    <h2 class="newS">+New</h2>
+
+  </section>
+
+  <ng-container *ngIf="user?.user?.modules?.length >= 1">
+    <section *ngFor="let module of user.user.modules">
+      <fa-icon [icon]="faEllipsisV"/>
+      <h2>{{module?.title}}</h2>
+      <h3>Mo</h3>
+    </section>
+  </ng-container>
+
+  <ng-container *ngIf="user?.user?.lists?.length >= 1">
+    <section *ngFor="let list of user.user.lists">
+      <fa-icon [icon]="faEllipsisV"/>
+      <h2>{{list?.title}}</h2>
+      <h3>Li</h3>
+    </section>
+  </ng-container>
+
+  <ng-container *ngIf="user?.user?.lockers?.length >= 1">
+    <section *ngFor="let locker of user.user.lockers">
+      <fa-icon [icon]="faEllipsisV"/>
+      <h2>{{locker?.title}}</h2>
+      <h3>Lo</h3>
+    </section>
+  </ng-container>
+
+  <div (click)="closeModal()" *ngIf="showModal()" class="modal-container">
+    <div class="modal-content">
+      Hola que tal
+    </div>
+  </div>
+</main>
 
