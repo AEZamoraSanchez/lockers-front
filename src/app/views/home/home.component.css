@@ -48,11 +48,31 @@ fa-icon{
 }
 
 .modal-container {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 1000;
   background-color: rgba(79, 79, 79, 0.6);
-
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  align-items: center;
 }
+
+.modal-content {
+  position : fixed;
+  background-color: aquamarine;
+  width: 90%;
+  border-radius: 8px;
+  max-width: 400px;
+  padding: 20px;
+}
+
+button{
+  background-color: bisque;
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+

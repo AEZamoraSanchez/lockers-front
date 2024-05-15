@@ -1,8 +1,8 @@
 
 <!-- <button (click)="mostrarReducer()" > ver reducer</button> -->
 
-<main #mainElement>
-  <section>
+<main #mainElement [ngClass]="{'modal-open': showModal()}">
+  <section (click)="openModal()">
     <h2 class="newS">+New</h2>
 
   </section>
@@ -32,8 +32,42 @@
   </ng-container>
 
   <div (click)="closeModal()" *ngIf="showModal()" class="modal-container">
-    <div class="modal-content">
-      Hola que tal
+    <div (click)="$event.stopPropagation()" class="modal-content">
+      <form [formGroup]="formularioModule" (ngSubmit)="createNewEntity()" class="flex flex-col gap-[15px] items-center">
+        <div class="flex flex-col w-full">
+          <label for="type">Type</label>
+          <select name="" id="type" formControlName="type" class="rounded-[5px]">
+            <option value="module">Module</option>
+            <option value="list">List</option>
+            <option value="locker">Locker</option>
+          </select>
+          <mat-error class="text-red-700" *ngIf="hasErrors('type', 'required')">
+            Select a type
+          </mat-error>
+        </div>
+          <div class="flex flex-col w-full" >
+            <label for="title">Title</label>
+            <input id="title" type="text" formControlName="title" class="rounded-[5px]">
+            <mat-error class="text-red-700" *ngIf="hasErrors('title', 'required')">
+              Title is required
+            </mat-error>
+            <mat-error class="text-red-700" *ngIf="hasErrors('title', 'maxlength')">
+              title length must be less than 25             </mat-error>
+          </div>
+          <div *ngIf="showDescriptionDiv()" class="flex flex-col w-full">
+            <label for="description" class="rounded-[5px]">Description</label>
+            <textarea id="description" type="text" formControlName="description"></textarea>
+            <mat-error class="text-red-700" *ngIf="hasErrors('description', 'required')">
+              Description is required
+            </mat-error>
+            <mat-error class="text-red-700" *ngIf="hasErrors('description', 'maxlength')">
+              title length must be less than 100
+            </mat-error>
+
+          </div>
+
+          <button>create</button>
+      </form>
     </div>
   </div>
 </main>
