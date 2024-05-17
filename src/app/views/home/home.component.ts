@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../../../utils/services/user.service';
 import { Observable } from 'rxjs';
 import { userMain } from '../../../utils/interfaces/userInterfaces/userMain.interface';
-import { Store, StoreModule } from '@ngrx/store';
+import { Store, StoreModule, select } from '@ngrx/store';
 import { updateUserMain, verReducer } from '../../../stores/userStore/user.actions';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -31,18 +31,17 @@ import { CreateEntityService } from '../../../utils/services/create-entity.servi
 })
 export class HomeComponent implements OnInit{
 
-  private _router : Router;
   user$ ? : Observable<userMain | null>
   user : any;
   faEllipsisV = faEllipsisV;
   showModal = signal(false);
   formularioModule : FormGroup;
   showDescriptionDiv = signal(false)
+  tokensDecoded : any;
 
 
   constructor(
     private _storageService: StorageService,
-    router : Router,
     private _userService : UserService,
     private store : Store<{ user : userMain | null}>,
     private renderer : Renderer2,
@@ -50,8 +49,7 @@ export class HomeComponent implements OnInit{
     private form : FormBuilder,
     private _createEntityService : CreateEntityService
   ){
-    this._router = router;
-    this.user$ = this.store.select('user')
+    this.user$ = this.store.pipe(select('user'))
 
 
     this.formularioModule = this.form.group({
@@ -79,8 +77,11 @@ export class HomeComponent implements OnInit{
 
     const tokensDecoded = this._storageService.validateToken("login", false)
 
+    this.tokensDecoded = tokensDecoded
+
     this._userService.getUserById(tokensDecoded?.accesTokenDecoded?.id)
     .subscribe( (response : any ) => {
+      console.log(response)
       this.store.dispatch(updateUserMain({ user : response}))
     },
    (error) => {
@@ -89,6 +90,7 @@ export class HomeComponent implements OnInit{
 
    this.user$?.subscribe( user => {
     this.user = user;
+    console.log(this.user)
   })
 
   }
@@ -109,14 +111,38 @@ export class HomeComponent implements OnInit{
     this.renderer.setStyle(this.document.body, 'overflow', 'hidden');
   }
 
-  createNewEntity(){
+  async createNewEntity(){
 
-    console.log(this.formularioModule)
+    // console.log(this.formularioModule)
     if(!this.formularioModule.valid){
       return
     }
 
-    this._createEntityService.createEntityInUser(this.formularioModule.value, this.user?.user?.id)
+    (await this._createEntityService.createEntityInUser(this.formularioModule.value, this.user?.user?.id)).
+    subscribe( data => {
+      if(data){
+        this._userService.getUserById(this.tokensDecoded?.accesTokenDecoded?.id).
+        subscribe( (response : any) => {
+          console.log(response)
+          this.store.dispatch(updateUserMain({ user : response}))
+        }, (error) => {
+          console.log(error)
+        })
+      }
+    })
+
+
+    this.closeModal()
+
+    // this._userService.getUserById(this.tokensDecoded?.accesTokenDecoded?.id)
+    // .subscribe( (response : any ) => {
+    //   console.log(response)
+    //   this.store.dispatch(updateUserMain({ user : response}))
+    //   console.log(this.user)
+    // }, (error) => {
+    //   console.log(error)
+    // })
+
 
   }
 

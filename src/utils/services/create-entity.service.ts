@@ -17,11 +17,8 @@ export class CreateEntityService {
 
   constructor(private http : HttpClient){}
 
-  createEntityInUser(entity : createEntity, userId : string){
+  async createEntityInUser(entity : createEntity, userId : string){
     entity.ownerId = userId
-    this.http.post(`${this.urlBackend}/${entity.type}`, entity).
-    subscribe(data => {
-      console.log(data)
-    })
+    return this.http.post(`${this.urlBackend}/${entity.type}`, entity)
   }
 }
