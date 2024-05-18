@@ -15,7 +15,7 @@
   </ng-container>
 
   <ng-container *ngIf="lists">
-    <section *ngFor="let list of lists">
+    <section *ngFor="let list of lists" (click)="openModalList('list', list?.id)">
       <fa-icon [icon]="faEllipsisV" class="top-[10px] right-[10px] text-[18px]"/>
       <h2>{{list?.title}}</h2>
       <h3>Li</h3>
@@ -23,7 +23,7 @@
   </ng-container>
 
   <ng-container *ngIf="lockers">
-    <section *ngFor="let locker of lockers">
+    <section *ngFor="let locker of lockers" (click)="openModalList('locker', locker?.id)">
       <fa-icon [icon]="faEllipsisV" class="top-[10px] right-[10px] text-[18px]"/>
       <h2>{{locker?.title}}</h2>
       <h3>Lo</h3>
@@ -32,7 +32,7 @@
 </main>
 
 <div (click)="closeModal()" *ngIf="showModal()" class="modal-container">
-  <div (click)="$event.stopPropagation()" class="modal-content">
+  <div (click)="$event.stopPropagation()" class="modal-content max-w-[400px]">
     <fa-icon [icon]="faCircleXmark" (click)="closeModal()" class="top-[5px] right-[5px] text-[25px]"/>
     <form [formGroup]="formularioModule" (ngSubmit)="createNewEntity()" class="flex flex-col gap-[15px] items-center">
       <div class="flex flex-col w-full">
@@ -72,10 +72,25 @@
   </div>
 </div>
 
-<!-- <div (click)="closeModal()" *ngIf="showModal()" class="modal-container">
-  <div (click)="$event.stopPropagation()" class="modal-content">
-    <fa-icon [icon]="faCircleXmark" (click)="closeModal()" class="top-[5px] right-[5px] text-[25px]"/>
-
+<div (click)="closeModalList()" *ngIf="showModalList()" class="modal-container">
+  <div (click)="$event.stopPropagation()" class="modal-content max-w-[600px] max-h-[80vh]">
+    <fa-icon [icon]="faCircleXmark" (click)="closeModalList()" class="top-[5px] right-[5px] text-[25px]"/>
+    <div class="flex flex-col p-[10px] bg-red-400 rounded-[10px]">
+      <h4 class="text-[30px]">{{ listToShow?.title}}</h4>
+      <h5 class="text-[20px]">{{ listToShow?.description}}</h5>
+    </div>
+    <div>
+      <ng-container *ngIf="listToShow && listToShow?.listTasks">
+        <div *ngFor="let task of listToShow.listTasks">
+          {{ task.title}}
+        </div>
+      </ng-container>
+      <ng-container *ngIf="listToShow && listToShow?.lockerTasks">
+        <div *ngFor="let task of listToShow.lockerTasks">
+          {{ task.title}}
+        </div>
+      </ng-container>
+    </div>
   </div>
-</div> -->
+</div>
 

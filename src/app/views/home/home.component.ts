@@ -17,7 +17,7 @@ import {EntityService } from '../../../utils/services/entities.service';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { ModuleInterface } from '../../../utils/interfaces/entitiesInterfaces/module.interface';
-import { updateModule } from '../../../stores/entitiesStore/entities.actions';
+import { updateModule } from '../../../stores/moduleStore/module.actions';
 import { ListInterface } from '../../../utils/interfaces/entitiesInterfaces/list.interface';
 import { LockerInterface } from '../../../utils/interfaces/entitiesInterfaces/locker.interface';
 
@@ -43,6 +43,8 @@ export class HomeComponent implements OnInit{
   module$ ? : Observable<ModuleInterface | null>
   user : any;
   module : any;
+  listToShow ? : any;
+
 
   modules: ModuleInterface[] = []
   lists: ListInterface[] = []
@@ -53,6 +55,7 @@ export class HomeComponent implements OnInit{
 
   showModal = signal(false);
   showDescriptionDiv = signal(false)
+  showModalList = signal(false)
   formularioModule : FormGroup;
   tokensDecoded : any;
   id ? : string | null = null;
@@ -71,7 +74,6 @@ export class HomeComponent implements OnInit{
   ){
     this.user$ = this.storeUser.pipe(select('user'))
     this.module$ = this.storeModule.pipe(select('module'))
-
 
     this.formularioModule = this.form.group({
       type : ['', Validators.required],
@@ -151,6 +153,20 @@ export class HomeComponent implements OnInit{
   openModal() {
     this.showModal.set(true)
     this.renderer.setStyle(this.document.body, 'overflow', 'hidden');
+  }
+
+  openModalList( type : string, id : string | undefined ) {
+    this.showModalList.set(true)
+    this.renderer.setStyle(this.document.body, 'overflow', 'hidden');
+    id && this._entityService.getListById( type, id).
+    subscribe( (data : any) => {
+      this.listToShow = data
+    })
+  }
+
+  closeModalList() {
+    this.showModalList.set(false)
+    this.renderer.setStyle(this.document.body, 'overflow', 'auto');
   }
 
   async createNewEntity(){

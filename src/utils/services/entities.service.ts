@@ -40,5 +40,9 @@ export class EntityService {
     return this.http.get(`${this.urlBackend}/module/${id}`)
   }
 
+  getListById ( type : string, id : string){
+    return this.http.get(`${this.urlBackend}/${type}/${id}`)
+  }
+
 
 }

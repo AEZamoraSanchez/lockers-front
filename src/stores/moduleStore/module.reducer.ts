@@ -1,6 +1,6 @@
 import { createReducer, on } from "@ngrx/store";
 import { ModuleInterface } from '../../utils/interfaces/entitiesInterfaces/module.interface';
-import { updateModule } from "./entities.actions";
+import { updateModule } from "./module.actions";
 
 interface moduleState {
   module : ModuleInterface | null;
