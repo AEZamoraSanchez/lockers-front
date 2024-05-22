@@ -2,7 +2,7 @@
 <!-- <button (click)="mostrarReducer()" > ver reducer</button> -->
 
 <main #mainElement [ngClass]="{'modal-open': showModal()}">
-  <section (click)="openModal()">
+  <section (click)="openModal('module')">
     <h2 class="newS">+New</h2>
 
   </section>
@@ -15,7 +15,7 @@
   </ng-container>
 
   <ng-container *ngIf="lists">
-    <section *ngFor="let list of lists" (click)="openModalList('list', list?.id)">
+    <section *ngFor="let list of lists" (click)="openModal('list', list?.id)">
       <fa-icon [icon]="faEllipsisV" class="top-[10px] right-[10px] text-[18px]"/>
       <h2>{{list?.title}}</h2>
       <h3>Li</h3>
@@ -23,7 +23,7 @@
   </ng-container>
 
   <ng-container *ngIf="lockers">
-    <section *ngFor="let locker of lockers" (click)="openModalList('locker', locker?.id)">
+    <section *ngFor="let locker of lockers" (click)="openModal('locker', locker?.id)">
       <fa-icon [icon]="faEllipsisV" class="top-[10px] right-[10px] text-[18px]"/>
       <h2>{{locker?.title}}</h2>
       <h3>Lo</h3>
@@ -31,9 +31,9 @@
   </ng-container>
 </main>
 
-<div (click)="closeModal()" *ngIf="showModal()" class="modal-container">
+<div (click)="closeModal('module')" *ngIf="showModal()" class="modal-container">
   <div (click)="$event.stopPropagation()" class="modal-content max-w-[400px]">
-    <fa-icon [icon]="faCircleXmark" (click)="closeModal()" class="top-[5px] right-[5px] text-[25px]"/>
+    <fa-icon [icon]="faCircleXmark" (click)="closeModal('module')" class="top-[5px] right-[5px] text-[25px]"/>
     <form [formGroup]="formularioModule" (ngSubmit)="createNewEntity()" class="flex flex-col gap-[15px] items-center">
       <div class="flex flex-col w-full">
         <label for="type">Type</label>
@@ -72,25 +72,61 @@
   </div>
 </div>
 
-<div (click)="closeModalList()" *ngIf="showModalList()" class="modal-container">
-  <div (click)="$event.stopPropagation()" class="modal-content max-w-[600px] max-h-[80vh]">
-    <fa-icon [icon]="faCircleXmark" (click)="closeModalList()" class="top-[5px] right-[5px] text-[25px]"/>
+<div (click)="closeModal('list')" *ngIf="showModalList()" class="modal-container">
+  <div (click)="$event.stopPropagation()" class="modal-content max-w-[600px] max-h-[80vh] min-h-[50vh] overflow-auto">
+    <fa-icon [icon]="faCircleXmark" (click)="closeModal('list')" class="top-[5px] right-[5px] text-[25px]"/>
     <div class="flex flex-col p-[10px] bg-red-400 rounded-[10px]">
       <h4 class="text-[30px]">{{ listToShow?.title}}</h4>
       <h5 class="text-[20px]">{{ listToShow?.description}}</h5>
     </div>
-    <div>
+    <div class="flex flex-col gap-[10px] py-[10px]">
+      <div class="bg-orange-300 w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s]" (click)="openModal('task')">
+        +New
+      </div>
       <ng-container *ngIf="listToShow && listToShow?.listTasks">
-        <div *ngFor="let task of listToShow.listTasks">
+        <div class="bg-orange-300 w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s]" *ngFor="let task of listToShow.listTasks">
           {{ task.title}}
         </div>
       </ng-container>
       <ng-container *ngIf="listToShow && listToShow?.lockerTasks">
-        <div *ngFor="let task of listToShow.lockerTasks">
+        <div class="bg-orange-300 w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s]" *ngFor="let task of listToShow.lockerTasks">
           {{ task.title}}
         </div>
       </ng-container>
     </div>
+
+
+  </div>
+</div>
+
+<div (click)="closeModal('task')" *ngIf="showModalListTask()" class="modal-container">
+  <div (click)="$event.stopPropagation()" class="modal-content max-w-[400px]">
+    <fa-icon [icon]="faCircleXmark" (click)="closeModal('task')" class="top-[5px] right-[5px] text-[25px]"/>
+    <form [formGroup]="formularioListTask " (ngSubmit)="createNewTask()" class="flex flex-col gap-[15px] items-center">
+          <div class="flex flex-col w-full" >
+          <label for="title">Title</label>
+          <input id="title" type="text" formControlName="title" class="rounded-[5px]">
+          <mat-error class="text-red-700" *ngIf="hasErrors('title', 'required')">
+            Title is required
+          </mat-error>
+          <mat-error class="text-red-700" *ngIf="hasErrors('title', 'maxlength')">
+            title length must be less than 25             </mat-error>
+        </div>
+        <div class="flex flex-col w-full">
+          <label for="description" class="rounded-[5px]">Description</label>
+          <textarea id="description" type="text" formControlName="description"></textarea>
+          <mat-error class="text-red-700" *ngIf="hasErrors('description', 'required')">
+            Description is required
+          </mat-error>
+          <mat-error class="text-red-700" *ngIf="hasErrors('description', 'maxlength')">
+            title length must be less than 100
+          </mat-error>
+
+        </div>
+
+        <button>create</button>
+    </form>
+
   </div>
 </div>
 

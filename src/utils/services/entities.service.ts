@@ -16,6 +16,16 @@ interface createEntityInModule extends createEntity {
   mainModule: string;
 }
 
+interface createTask {
+  title : string;
+
+  description : string;
+
+  lockerId ? : string;
+
+  listId ? : string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -34,6 +44,10 @@ export class EntityService {
     entity.moduleId = moduleId
     entity.mainModule = moduleId
     return this.http.post(`${this.urlBackend}/${entity.type}`, entity)
+  }
+
+  createTasks ( createTask : createTask, type : string){
+    return this.http.post(`${this.urlBackend}/${type}-task`, createTask)
   }
 
   getModuleById ( id : string) {

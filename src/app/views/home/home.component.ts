@@ -56,7 +56,10 @@ export class HomeComponent implements OnInit{
   showModal = signal(false);
   showDescriptionDiv = signal(false)
   showModalList = signal(false)
+  showModalListTask = signal(false)
+
   formularioModule : FormGroup;
+  formularioListTask : FormGroup;
   tokensDecoded : any;
   id ? : string | null = null;
 
@@ -77,6 +80,11 @@ export class HomeComponent implements OnInit{
 
     this.formularioModule = this.form.group({
       type : ['', Validators.required],
+      title : ['', [Validators.required, Validators.maxLength(35)]],
+      description : ['', [Validators.required, Validators.maxLength(100)]]
+    })
+
+    this.formularioListTask = this.form.group({
       title : ['', [Validators.required, Validators.maxLength(35)]],
       description : ['', [Validators.required, Validators.maxLength(100)]]
     })
@@ -145,28 +153,32 @@ export class HomeComponent implements OnInit{
     }
   }
 
-  closeModal() {
-    this.showModal.set(false)
+  closeModal(type : string ) {
+    // console.log(type)
+    // console.log(this.showModalList())
     this.renderer.setStyle(this.document.body, 'overflow', 'auto')
+    type == "module" && this.showModal.set(false)
+    type == 'list' && this.showModalList.set(false)
+    type == 'task' && this.    showModalListTask.set(false)
+
   }
 
-  openModal() {
-    this.showModal.set(true)
-    this.renderer.setStyle(this.document.body, 'overflow', 'hidden');
-  }
+  openModal(type : string, id : string | null = null) {
+    type == 'module' && this.showModal.set(true)
 
-  openModalList( type : string, id : string | undefined ) {
-    this.showModalList.set(true)
-    this.renderer.setStyle(this.document.body, 'overflow', 'hidden');
-    id && this._entityService.getListById( type, id).
+    if(type == "list" || type == "locker"){
+      this.showModalList.set(true)
+      id && this._entityService.getListById( type, id).
     subscribe( (data : any) => {
       this.listToShow = data
     })
-  }
+    }
 
-  closeModalList() {
-    this.showModalList.set(false)
-    this.renderer.setStyle(this.document.body, 'overflow', 'auto');
+    if( type == 'task' ){
+      this.showModalListTask.set(true)
+    }
+
+    this.renderer.setStyle(this.document.body, 'overflow', 'hidden');
   }
 
   async createNewEntity(){
@@ -211,8 +223,25 @@ export class HomeComponent implements OnInit{
       console.log(error)
     })
     }
-    this.closeModal()
+    this.closeModal("module")
 
+  }
+  createNewTask () {
+    if(!this.formularioListTask.valid){
+      return
+    }
+    if(this.listToShow?.listTasks){
+      this.formularioListTask.value.listId = this.listToShow.id
+      this._entityService.createTasks(this.formularioListTask.value, 'list').subscribe(data => {
+        console.log(data)
+      })
+    }
+    if(this.listToShow?.lockerTasks){
+      this.formularioListTask.value.lockerId = this.listToShow.id
+      this._entityService.createTasks(this.formularioListTask.value, 'locker').subscribe(data => {
+        console.log(data)
+      })
+    }
   }
 
   hasErrors( controlName : string, errorType : string ) {
