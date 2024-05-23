@@ -44,6 +44,7 @@ export class HomeComponent implements OnInit{
   user : any;
   module : any;
   listToShow ? : any;
+  taskToShow ? : any;
 
 
   modules: ModuleInterface[] = []
@@ -57,6 +58,7 @@ export class HomeComponent implements OnInit{
   showDescriptionDiv = signal(false)
   showModalList = signal(false)
   showModalListTask = signal(false)
+  showTask = signal(false)
 
   formularioModule : FormGroup;
   formularioListTask : FormGroup;
@@ -174,9 +176,9 @@ export class HomeComponent implements OnInit{
     })
     }
 
-    if( type == 'task' ){
-      this.showModalListTask.set(true)
-    }
+    type == 'task' && this.showModalListTask.set(true)
+
+    type == 'showTask' && this.showTask.set(true)
 
     this.renderer.setStyle(this.document.body, 'overflow', 'hidden');
   }
@@ -233,19 +235,31 @@ export class HomeComponent implements OnInit{
     if(this.listToShow?.listTasks){
       this.formularioListTask.value.listId = this.listToShow.id
       this._entityService.createTasks(this.formularioListTask.value, 'list').subscribe(data => {
-        console.log(data)
+        this._entityService.getListById( 'list', this.listToShow.id).
+    subscribe( (data : any) => {
+      this.listToShow = data
+    })
       })
     }
     if(this.listToShow?.lockerTasks){
       this.formularioListTask.value.lockerId = this.listToShow.id
       this._entityService.createTasks(this.formularioListTask.value, 'locker').subscribe(data => {
-        console.log(data)
+        this._entityService.getListById( 'locker', this.listToShow.id).
+    subscribe( (data : any) => {
+      this.listToShow = data
+    })
       })
     }
+
+    this.closeModal("task")
   }
 
   hasErrors( controlName : string, errorType : string ) {
     return this.formularioModule?.get(controlName)?.hasError(errorType) && this.formularioModule?.get(controlName)?.touched
+  }
+
+  hasErrorsTasks( controlName : string, errorType : string ) {
+    return this.formularioListTask?.get(controlName)?.hasError(errorType) && this.formularioListTask?.get(controlName)?.touched
   }
 
 }

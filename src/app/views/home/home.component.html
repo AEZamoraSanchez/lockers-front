@@ -8,7 +8,9 @@
   </section>
   <ng-container *ngIf="modules">
     <section *ngFor="let module of modules" [routerLink]="['/', module?.id]" routerLinkActive="router-link-active">
-      <fa-icon [icon]="faEllipsisV" class="top-[10px] right-[10px] text-[18px]"/>
+      <div class="flex absolute top-[10px] right-[10px] h-[20px] aspect-square justify-center content-center rounded-[50%]" (click)="$event.stopPropagation()">
+        <fa-icon [icon]="faEllipsisV" class="text-[18px] place-self-center"/>
+      </div>
       <h2>{{module?.title}}</h2>
       <h3>Mo</h3>
     </section>
@@ -16,7 +18,9 @@
 
   <ng-container *ngIf="lists">
     <section *ngFor="let list of lists" (click)="openModal('list', list?.id)">
-      <fa-icon [icon]="faEllipsisV" class="top-[10px] right-[10px] text-[18px]"/>
+      <div class="flex absolute top-[10px] right-[10px] h-[20px] aspect-square justify-center content-center rounded-[50%]" (click)="$event.stopPropagation()">
+        <fa-icon [icon]="faEllipsisV" class="text-[18px] place-self-center"/>
+      </div>
       <h2>{{list?.title}}</h2>
       <h3>Li</h3>
     </section>
@@ -24,7 +28,9 @@
 
   <ng-container *ngIf="lockers">
     <section *ngFor="let locker of lockers" (click)="openModal('locker', locker?.id)">
-      <fa-icon [icon]="faEllipsisV" class="top-[10px] right-[10px] text-[18px]"/>
+      <div class="flex absolute top-[10px] right-[10px] h-[20px] aspect-square justify-center content-center rounded-[50%]" (click)="$event.stopPropagation()">
+        <fa-icon [icon]="faEllipsisV" class="text-[18px] place-self-center"/>
+      </div>
       <h2>{{locker?.title}}</h2>
       <h3>Lo</h3>
     </section>
@@ -106,19 +112,19 @@
           <div class="flex flex-col w-full" >
           <label for="title">Title</label>
           <input id="title" type="text" formControlName="title" class="rounded-[5px]">
-          <mat-error class="text-red-700" *ngIf="hasErrors('title', 'required')">
+          <mat-error class="text-red-700" *ngIf="hasErrorsTasks('title', 'required')">
             Title is required
           </mat-error>
-          <mat-error class="text-red-700" *ngIf="hasErrors('title', 'maxlength')">
+          <mat-error class="text-red-700" *ngIf="hasErrorsTasks('title', 'maxlength')">
             title length must be less than 25             </mat-error>
         </div>
         <div class="flex flex-col w-full">
           <label for="description" class="rounded-[5px]">Description</label>
           <textarea id="description" type="text" formControlName="description"></textarea>
-          <mat-error class="text-red-700" *ngIf="hasErrors('description', 'required')">
+          <mat-error class="text-red-700" *ngIf="hasErrorsTasks('description', 'required')">
             Description is required
           </mat-error>
-          <mat-error class="text-red-700" *ngIf="hasErrors('description', 'maxlength')">
+          <mat-error class="text-red-700" *ngIf="hasErrorsTasks('description', 'maxlength')">
             title length must be less than 100
           </mat-error>
 
