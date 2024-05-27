@@ -161,11 +161,12 @@ export class HomeComponent implements OnInit{
     this.renderer.setStyle(this.document.body, 'overflow', 'auto')
     type == "module" && this.showModal.set(false)
     type == 'list' && this.showModalList.set(false)
-    type == 'task' && this.    showModalListTask.set(false)
+    type == 'task' && this.showModalListTask.set(false)
+    type == 'showTask' && this.showTask.set(false)
 
   }
 
-  openModal(type : string, id : string | null = null) {
+  openModal(type : string, id : string | null = null, task : any | null = null ) {
     type == 'module' && this.showModal.set(true)
 
     if(type == "list" || type == "locker"){
@@ -178,7 +179,14 @@ export class HomeComponent implements OnInit{
 
     type == 'task' && this.showModalListTask.set(true)
 
-    type == 'showTask' && this.showTask.set(true)
+    if (type == 'showTask') {
+      this.showTask.set(true)
+      this.taskToShow = task
+      // console.log(this.taskToShow)
+    }
+
+
+    // console.log(type)
 
     this.renderer.setStyle(this.document.body, 'overflow', 'hidden');
   }

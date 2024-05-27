@@ -89,13 +89,13 @@
       <div class="bg-orange-300 w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s]" (click)="openModal('task')">
         +New
       </div>
-      <ng-container *ngIf="listToShow && listToShow?.listTasks">
-        <div class="bg-orange-300 w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s]" *ngFor="let task of listToShow.listTasks">
+      <ng-container *ngIf="listToShow && listToShow?.listTasks" >
+        <div class="bg-orange-300 w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s]" *ngFor="let task of listToShow.listTasks" (click)="openModal('showTask', null, task)">
           {{ task.title}}
         </div>
       </ng-container>
-      <ng-container *ngIf="listToShow && listToShow?.lockerTasks">
-        <div class="bg-orange-300 w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s]" *ngFor="let task of listToShow.lockerTasks">
+      <ng-container *ngIf="listToShow && listToShow?.lockerTasks" >
+        <div class="bg-orange-300 w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s]" *ngFor="let task of listToShow.lockerTasks" (click)="openModal('showTask', null, task)">
           {{ task.title}}
         </div>
       </ng-container>
@@ -133,6 +133,14 @@
         <button>create</button>
     </form>
 
+  </div>
+</div>
+
+<div (click)="closeModal('showTask')" *ngIf="showTask()" class="modal-container">
+  <div (click)="$event.stopPropagation()" class="modal-content max-w-[400px] flex gap-[10px] flex-col">
+    <fa-icon [icon]="faCircleXmark" (click)="closeModal('showTask')" class="top-[5px] right-[5px] text-[25px]"/>
+      <h4 class="text-[30px] p-[10px] bg-red-400 rounded-[10px]">{{ taskToShow?.title}}</h4>
+      <h5 class="text-[20px] p-[5px] bg-red-200 rounded-[5px]">{{ taskToShow?.description}}</h5>
   </div>
 </div>
 
