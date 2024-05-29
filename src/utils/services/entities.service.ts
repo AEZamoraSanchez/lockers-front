@@ -8,6 +8,7 @@ export interface createEntity {
   title: string;
   description ? : string;
   ownerId ? : string;
+  propietario : string;
 }
 
 interface createEntityInModule extends createEntity {
@@ -37,12 +38,14 @@ export class EntityService {
 
   createEntityInUser(entity : createEntity, userId : string){
     entity.ownerId = userId
+    entity.propietario = userId;
     return this.http.post(`${this.urlBackend}/${entity.type}`, entity)
   }
 
-  createEntityInModule ( entity : createEntityInModule, moduleId : string) {
+  createEntityInModule ( entity : createEntityInModule, moduleId : string, prop : string ) {
     entity.moduleId = moduleId
     entity.mainModule = moduleId
+    entity.propietario = prop
     return this.http.post(`${this.urlBackend}/${entity.type}`, entity)
   }
 
@@ -50,12 +53,18 @@ export class EntityService {
     return this.http.post(`${this.urlBackend}/${type}-task`, createTask)
   }
 
-  getModuleById ( id : string) {
-    return this.http.get(`${this.urlBackend}/module/${id}`)
+  getModuleById ( id : string, prop : string) {
+    console.log(id)
+    console.log(prop)
+    return this.http.get(`${this.urlBackend}/module/${id}/${prop}`)
   }
 
   getListById ( type : string, id : string){
     return this.http.get(`${this.urlBackend}/${type}/${id}`)
+  }
+
+  deleteEntity ( type : string,  id : string ){
+    return this.http.delete(`${this.urlBackend}/${type}/${id}`)
   }
 
 

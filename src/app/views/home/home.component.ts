@@ -20,6 +20,8 @@ import { ModuleInterface } from '../../../utils/interfaces/entitiesInterfaces/mo
 import { updateModule } from '../../../stores/moduleStore/module.actions';
 import { ListInterface } from '../../../utils/interfaces/entitiesInterfaces/list.interface';
 import { LockerInterface } from '../../../utils/interfaces/entitiesInterfaces/locker.interface';
+import { ToastrService } from 'ngx-toastr';
+
 
 
 @Component({
@@ -45,6 +47,10 @@ export class HomeComponent implements OnInit{
   module : any;
   listToShow ? : any;
   taskToShow ? : any;
+  entityToDelete : { id : string | null; type : string | null} = {
+    id : null,
+    type : null
+  }
 
 
   modules: ModuleInterface[] = []
@@ -59,6 +65,9 @@ export class HomeComponent implements OnInit{
   showModalList = signal(false)
   showModalListTask = signal(false)
   showTask = signal(false)
+  showDelete = signal(false)
+  showDeleteFlags: { [key: string]: boolean } = {};
+
 
   formularioModule : FormGroup;
   formularioListTask : FormGroup;
@@ -75,7 +84,8 @@ export class HomeComponent implements OnInit{
     @Inject(DOCUMENT) private document : Document,
     private form : FormBuilder,
     private _entityService : EntityService,
-    private route : ActivatedRoute
+    private route : ActivatedRoute,
+    private toastr : ToastrService
   ){
     this.user$ = this.storeUser.pipe(select('user'))
     this.module$ = this.storeModule.pipe(select('module'))
@@ -109,21 +119,38 @@ export class HomeComponent implements OnInit{
   ngOnInit(): void {
 
     const tokensDecoded = this._storageService.validateToken("login", false)
-
     this.tokensDecoded = tokensDecoded
 
-    let id;
+    if( !this.user?.user?.id ){
+      this._userService.getUserById(tokensDecoded?.accesTokenDecoded?.id)
+      .subscribe( (response : any ) => {
+        this.storeUser.dispatch(updateUserMain({ user : response}))
+      },
+      (error) => {
+        this.toastr.error(error?.error?.message)
+      })
+    }
+
+    this.user$?.subscribe( (user: any) => {
+      this.user = user
+      });
+
     this.route?.params?.subscribe( params => {
-      id = params['id'];
+      let id = params['id'];
       this.id = id
-      if(id){
-        this._entityService.getModuleById(id).
+      if(!id){
+        this.user$?.subscribe( (user : any) => {
+                this.modules = user?.user?.modules
+                this.lists = user?.user?.lists
+                this.lockers = user?.user?.lockers
+            })
+      } else {
+        this._entityService.getModuleById(id, this.user?.user?.id).
         subscribe( (module : any) => {
           this.storeModule.dispatch(updateModule({ module : module}))
-          // console.log(module)
         },
         (error) => {
-          console.log(error)
+          this.toastr.error(error?.error?.message)
         })
 
         this.module$?.subscribe( (module : any) => {
@@ -136,23 +163,9 @@ export class HomeComponent implements OnInit{
           console.log(error)
         })
       }
-    });
-    this._userService.getUserById(tokensDecoded?.accesTokenDecoded?.id)
-      .subscribe( (response : any ) => {
-        this.storeUser.dispatch(updateUserMain({ user : response}))
-      },
-     (error) => {
-       console.log(error)
-     })
+    })
 
-    if(!id){
-      this.user$?.subscribe( (user : any) => {
-              this.user = user
-              this.modules = user?.user?.modules
-              this.lists = user?.user?.lists
-              this.lockers = user?.user?.lockers
-          })
-    }
+
   }
 
   closeModal(type : string ) {
@@ -163,13 +176,14 @@ export class HomeComponent implements OnInit{
     type == 'list' && this.showModalList.set(false)
     type == 'task' && this.showModalListTask.set(false)
     type == 'showTask' && this.showTask.set(false)
+    type == 'delete' && this.showDelete.set(false)
 
   }
 
-  openModal(type : string, id : string | null = null, task : any | null = null ) {
-    type == 'module' && this.showModal.set(true)
+  openModal(type : string, id : string | null = null, task : any | null = null, deleteE : boolean | null = null) {
+    type == 'module'  && !deleteE && this.showModal.set(true)
 
-    if(type == "list" || type == "locker"){
+    if((type == "list" || type == "locker") && !deleteE ){
       this.showModalList.set(true)
       id && this._entityService.getListById( type, id).
     subscribe( (data : any) => {
@@ -177,16 +191,21 @@ export class HomeComponent implements OnInit{
     })
     }
 
-    type == 'task' && this.showModalListTask.set(true)
+    type == 'task' && !deleteE  && this.showModalListTask.set(true)
 
-    if (type == 'showTask') {
+    if (type == 'showTask' && !deleteE ) {
       this.showTask.set(true)
       this.taskToShow = task
       // console.log(this.taskToShow)
     }
 
-
-    // console.log(type)
+    if(deleteE){
+      this.showDelete.set(true)
+      // console.log(type)
+      // console.log(id)
+      if(type) this.entityToDelete.type = type
+      if(id) this.entityToDelete.id = id
+    }
 
     this.renderer.setStyle(this.document.body, 'overflow', 'hidden');
   }
@@ -215,13 +234,13 @@ export class HomeComponent implements OnInit{
         console.log(error)
       })
     } else {
-      this._entityService.createEntityInModule(this.formularioModule?.value, this.id ).
+      this._entityService.createEntityInModule(this.formularioModule?.value, this.id, this.user?.user?.id ).
       subscribe( data => {
-        console.log(data)
+        // console.log(data)
         if ( data && this.id){
-          this._entityService.getModuleById(this.id).
+          this._entityService.getModuleById(this.id, this.user?.user?.id).
           subscribe( (module : any) => {
-            console.log(module)
+            // console.log(module)
             this.storeModule.dispatch(updateModule({ module : module}))
           },
           (error) => {
@@ -269,5 +288,40 @@ export class HomeComponent implements OnInit{
   hasErrorsTasks( controlName : string, errorType : string ) {
     return this.formularioListTask?.get(controlName)?.hasError(errorType) && this.formularioListTask?.get(controlName)?.touched
   }
+
+  isUrl(text: string) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const tested = urlRegex.test(text);
+    // console.log(text)
+    return tested
+  }
+
+  toggleShowDelete(moduleId: string | undefined) {
+    if(moduleId){
+      this.showDeleteFlags[moduleId] = !this.showDeleteFlags[moduleId];
+    }
+  }
+
+  deleteEntity () {
+    if(this.entityToDelete.id && this.entityToDelete.type){
+      this._entityService.deleteEntity(this.entityToDelete?.type, this.entityToDelete?.id).
+      subscribe(data => {
+        if(data){
+          this._userService.getUserById(this.tokensDecoded?.accesTokenDecoded?.id).
+          subscribe( (response : any) => {
+            this.storeUser.dispatch(updateUserMain({ user : response}))
+          }, (error) => {
+            console.log(error)
+          })
+        }
+      })
+    }
+
+    this.closeModal("delete")
+    // console.log(this.entityToDelete)
+
+  }
+
+
 
 }

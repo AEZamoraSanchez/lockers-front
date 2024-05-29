@@ -15,7 +15,7 @@ section {
   cursor: pointer;
   display: flex;
   padding: 15px;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   position: relative;
   /* width: 90%; */
 }
@@ -82,7 +82,7 @@ h3{
 }
 
 button{
-  background-color: bisque;
+  /* background-color: bisque; */
   width: fit-content;
   padding: 5px 10px;
   border-radius: 5px;
