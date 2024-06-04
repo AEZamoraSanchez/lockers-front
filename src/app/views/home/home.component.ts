@@ -21,6 +21,7 @@ import { updateModule } from '../../../stores/moduleStore/module.actions';
 import { ListInterface } from '../../../utils/interfaces/entitiesInterfaces/list.interface';
 import { LockerInterface } from '../../../utils/interfaces/entitiesInterfaces/locker.interface';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../environments/environment';
 
 
 
@@ -117,6 +118,8 @@ export class HomeComponent implements OnInit{
   }
 
   ngOnInit(): void {
+
+    console.log(environment.cons)
 
     const tokensDecoded = this._storageService.validateToken("login", false)
     this.tokensDecoded = tokensDecoded

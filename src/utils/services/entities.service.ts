@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { ModuleInterface } from "../interfaces/entitiesInterfaces/module.interface";
+import { environment } from "../../environments/environment";
 
 export interface createEntity {
   type: string;
@@ -32,7 +33,7 @@ interface createTask {
 })
 export class EntityService {
 
-  private urlBackend = 'http://localhost:3000'
+  private urlBackend = environment.urlBackend
 
   constructor(private http : HttpClient){}
 
