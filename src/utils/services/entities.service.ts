@@ -55,8 +55,6 @@ export class EntityService {
   }
 
   getModuleById ( id : string, prop : string) {
-    console.log(id)
-    console.log(prop)
     return this.http.get(`${this.urlBackend}/module/${id}/${prop}`)
   }
 

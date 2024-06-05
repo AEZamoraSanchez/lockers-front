@@ -13,12 +13,10 @@ export const userState : userState = {
 export const userReducer = createReducer(
   userState,
   on(updateUserMain, (state, { user }) => {
-    // console.log("user:", user )
     return { ...state, user}
   }),
 
   on(verReducer, (state) => {
-    console.log(state)
     return state
   })
 )

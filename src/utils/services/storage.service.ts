@@ -68,11 +68,9 @@ export class StorageService {
   updateRefreshToken () {
     this._authService.updateRefreshToken().subscribe(
       (response) => {
-        // Maneja la respuesta exitosa
         this.saveInfo("refresasdasdasd", response)
       },
       (error) => {
-        // Maneja el error
         console.error('Error al actualizar el refresh token:', error);
       }
     );  }

@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { StorageService } from '../../../utils/services/storage.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UserService } from '../../../utils/services/user.service';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable, catchError, of, switchMap, tap } from 'rxjs';
 import { userMain } from '../../../utils/interfaces/userInterfaces/userMain.interface';
 import { Store, StoreModule, select } from '@ngrx/store';
 import { updateUserMain, verReducer } from '../../../stores/userStore/user.actions';
@@ -134,46 +134,98 @@ export class HomeComponent implements OnInit{
       })
     }
 
-    this.user$?.subscribe( (user: any) => {
-      this.user = user
-      });
-
-    this.route?.params?.subscribe( params => {
-      let id = params['id'];
-      this.id = id
-      if(!id){
-        this.user$?.subscribe( (user : any) => {
-                this.modules = user?.user?.modules
-                this.lists = user?.user?.lists
-                this.lockers = user?.user?.lockers
+    this.user$?.pipe(
+      switchMap((user: any) => {
+        this.user = user;
+        if (user?.user) {
+          return this.route?.params?.pipe(
+            switchMap(params => {
+              let id = params['id'];
+              this.id = id;
+              if (!id) {
+                return this.user$?.pipe(
+                  switchMap((user: any) => {
+                    this.modules = user?.user?.modules;
+                    this.lists = user?.user?.lists;
+                    this.lockers = user?.user?.lockers;
+                    return of(null);
+                  })
+                ) || EMPTY;
+              } else {
+                console.log(this.user?.user?.id);
+                return this._entityService.getModuleById(id, this.user?.user?.id).pipe(
+                  switchMap((module: any) => {
+                    this.storeModule.dispatch(updateModule({ module: module }));
+                    return this.module$?.pipe(
+                      switchMap((module: any) => {
+                        this.module = module;
+                        this.modules = module?.module?.modules;
+                        this.lists = module?.module?.lists;
+                        this.lockers = module?.module?.lockers;
+                        return of(null);
+                      })
+                    ) || EMPTY;
+                  }),
+                  catchError((error) => {
+                    console.error(error);
+                    this.toastr.error(error?.error?.message);
+                    return of(null);
+                  })
+                ) || EMPTY;
+              }
             })
-      } else {
-        this._entityService.getModuleById(id, this.user?.user?.id).
-        subscribe( (module : any) => {
-          this.storeModule.dispatch(updateModule({ module : module}))
-        },
-        (error) => {
-          this.toastr.error(error?.error?.message)
-        })
+          ) || EMPTY;
+        } else {
+          return EMPTY;
+        }
+      })
+    ).subscribe();
 
-        this.module$?.subscribe( (module : any) => {
-          this.module = module
-          this.modules = module?.module?.modules
-          this.lists = module?.module?.lists
-          this.lockers = module?.module?.lockers
-        },
-        (error) => {
-          console.log(error)
-        })
-      }
-    })
+
+    // this.user$?.subscribe( (user: any) => {
+    //   this.user = user
+
+    //   this.route?.params?.subscribe( params => {
+    //     let id = params['id'];
+    //     this.id = id
+    //       if( user?.user){
+    //         if(!id){
+    //           this.user$?.subscribe( (user : any) => {
+    //                   this.modules = user?.user?.modules
+    //                   this.lists = user?.user?.lists
+    //                   this.lockers = user?.user?.lockers
+    //               })
+    //         } else {
+    //           console.log(this.user?.user?.id)
+    //           this._entityService.getModuleById(id, this.user?.user?.id).
+    //           subscribe( (module : any) => {
+    //             // console.log(module)
+    //             this.storeModule.dispatch(updateModule({ module : module}))
+    //           },
+    //           (error) => {
+    //             console.error(error)
+    //             this.toastr.error(error?.error?.message)
+    //           })
+
+    //           this.module$?.subscribe( (module : any) => {
+    //             this.module = module
+    //             this.modules = module?.module?.modules
+    //             this.lists = module?.module?.lists
+    //             this.lockers = module?.module?.lockers
+    //           },
+    //           (error) => {
+    //             console.log(error)
+    //           })
+    //         }
+    //       }
+    //   })
+    //   });
+
 
 
   }
 
   closeModal(type : string ) {
-    // console.log(type)
-    // console.log(this.showModalList())
     this.renderer.setStyle(this.document.body, 'overflow', 'auto')
     type == "module" && this.showModal.set(false)
     type == 'list' && this.showModalList.set(false)
@@ -199,13 +251,10 @@ export class HomeComponent implements OnInit{
     if (type == 'showTask' && !deleteE ) {
       this.showTask.set(true)
       this.taskToShow = task
-      // console.log(this.taskToShow)
     }
 
     if(deleteE){
       this.showDelete.set(true)
-      // console.log(type)
-      // console.log(id)
       if(type) this.entityToDelete.type = type
       if(id) this.entityToDelete.id = id
     }
@@ -215,7 +264,6 @@ export class HomeComponent implements OnInit{
 
   async createNewEntity(){
 
-    // console.log(this.formularioModule)
     if(!this.formularioModule.valid){
       return
     }
@@ -223,11 +271,9 @@ export class HomeComponent implements OnInit{
     if(!this.id){
       this._entityService.createEntityInUser(this.formularioModule.value, this.user?.user?.id).
       subscribe( data => {
-        // console.log(data)
         if(data){
           this._userService.getUserById(this.tokensDecoded?.accesTokenDecoded?.id).
           subscribe( (response : any) => {
-            // console.log(response)
             this.storeUser.dispatch(updateUserMain({ user : response}))
           }, (error) => {
             console.log(error)
@@ -239,11 +285,9 @@ export class HomeComponent implements OnInit{
     } else {
       this._entityService.createEntityInModule(this.formularioModule?.value, this.id, this.user?.user?.id ).
       subscribe( data => {
-        // console.log(data)
         if ( data && this.id){
           this._entityService.getModuleById(this.id, this.user?.user?.id).
           subscribe( (module : any) => {
-            // console.log(module)
             this.storeModule.dispatch(updateModule({ module : module}))
           },
           (error) => {
@@ -295,7 +339,6 @@ export class HomeComponent implements OnInit{
   isUrl(text: string) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const tested = urlRegex.test(text);
-    // console.log(text)
     return tested
   }
 
@@ -321,7 +364,6 @@ export class HomeComponent implements OnInit{
     }
 
     this.closeModal("delete")
-    // console.log(this.entityToDelete)
 
   }
 
