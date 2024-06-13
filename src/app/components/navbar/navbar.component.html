@@ -1,11 +1,11 @@
-<nav #navElement>
+<nav #navElement class="bg-blue-700">
 
   <h2 [routerLink]="['']" routerLinkActive="router-link-active">Lockers</h2>
 
   <img (click)="showMenu()" src="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg">
 
   @if(navMenu()){
-    <div>
+    <div class="bg-blue-300">
       <h4>
         {{ user?.user?.username }}
       </h4>
