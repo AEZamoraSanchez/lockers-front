@@ -83,7 +83,6 @@ h3{
 
 button{
   /* background-color: bisque; */
-  width: fit-content;
   padding: 5px 10px;
   border-radius: 5px;
 }
@@ -92,4 +91,9 @@ fa-icon {
   cursor: pointer;
   border-radius: 50%;
   position: absolute;
+}
+
+svg {
+  width: 25px;
+  height: 25px;
 }

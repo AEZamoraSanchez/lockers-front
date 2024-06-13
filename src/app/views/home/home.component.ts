@@ -9,21 +9,18 @@ import { Store, StoreModule, select } from '@ngrx/store';
 import { updateUserMain, verReducer } from '../../../stores/userStore/user.actions';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark, faTrashCan, faSquareCheck} from '@fortawesome/free-regular-svg-icons';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {EntityService } from '../../../utils/services/entities.service';
-import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { ModuleInterface } from '../../../utils/interfaces/entitiesInterfaces/module.interface';
 import { updateModule } from '../../../stores/moduleStore/module.actions';
 import { ListInterface } from '../../../utils/interfaces/entitiesInterfaces/list.interface';
 import { LockerInterface } from '../../../utils/interfaces/entitiesInterfaces/locker.interface';
 import { ToastrService } from 'ngx-toastr';
-import { environment } from '../../../environments/environment';
-
-
 
 @Component({
   selector: 'app-home',
@@ -60,6 +57,8 @@ export class HomeComponent implements OnInit{
 
   faEllipsisV = faEllipsisV;
   faCircleXmark = faCircleXmark as IconProp;
+  faTrashCan = faTrashCan as IconProp;
+  faCheck = faCheck as IconProp;
 
   showModal = signal(false);
   showDescriptionDiv = signal(false)
@@ -67,11 +66,14 @@ export class HomeComponent implements OnInit{
   showModalListTask = signal(false)
   showTask = signal(false)
   showDelete = signal(false)
+  showInputListTask = signal(false)
   showDeleteFlags: { [key: string]: boolean } = {};
 
 
   formularioModule : FormGroup;
   formularioListTask : FormGroup;
+  formularioListCheck : FormGroup;
+
   tokensDecoded : any;
   id ? : string | null = null;
 
@@ -94,12 +96,16 @@ export class HomeComponent implements OnInit{
     this.formularioModule = this.form.group({
       type : ['', Validators.required],
       title : ['', [Validators.required, Validators.maxLength(35)]],
-      description : ['', [Validators.required, Validators.maxLength(100)]]
+      description : ['', [Validators.maxLength(100)]]
     })
 
     this.formularioListTask = this.form.group({
       title : ['', [Validators.required, Validators.maxLength(35)]],
       description : ['', [Validators.required, Validators.maxLength(100)]]
+    })
+
+    this.formularioListCheck = this.form.group({
+      title : ['', [Validators.required, Validators.maxLength(35)]]
     })
 
     this.formularioModule.get('type')?.valueChanges.
@@ -110,7 +116,7 @@ export class HomeComponent implements OnInit{
         descriptionControl?.setValidators([])
       } else {
         this.showDescriptionDiv.set(true)
-        descriptionControl?.setValidators([Validators.required, Validators.maxLength(100)])
+        descriptionControl?.setValidators([Validators.maxLength(100)])
       }
       descriptionControl?.updateValueAndValidity()
     })
@@ -118,8 +124,6 @@ export class HomeComponent implements OnInit{
   }
 
   ngOnInit(): void {
-
-    console.log(environment.cons)
 
     const tokensDecoded = this._storageService.validateToken("login", false)
     this.tokensDecoded = tokensDecoded
@@ -152,7 +156,6 @@ export class HomeComponent implements OnInit{
                   })
                 ) || EMPTY;
               } else {
-                console.log(this.user?.user?.id);
                 return this._entityService.getModuleById(id, this.user?.user?.id).pipe(
                   switchMap((module: any) => {
                     this.storeModule.dispatch(updateModule({ module: module }));
@@ -180,56 +183,15 @@ export class HomeComponent implements OnInit{
         }
       })
     ).subscribe();
-
-
-    // this.user$?.subscribe( (user: any) => {
-    //   this.user = user
-
-    //   this.route?.params?.subscribe( params => {
-    //     let id = params['id'];
-    //     this.id = id
-    //       if( user?.user){
-    //         if(!id){
-    //           this.user$?.subscribe( (user : any) => {
-    //                   this.modules = user?.user?.modules
-    //                   this.lists = user?.user?.lists
-    //                   this.lockers = user?.user?.lockers
-    //               })
-    //         } else {
-    //           console.log(this.user?.user?.id)
-    //           this._entityService.getModuleById(id, this.user?.user?.id).
-    //           subscribe( (module : any) => {
-    //             // console.log(module)
-    //             this.storeModule.dispatch(updateModule({ module : module}))
-    //           },
-    //           (error) => {
-    //             console.error(error)
-    //             this.toastr.error(error?.error?.message)
-    //           })
-
-    //           this.module$?.subscribe( (module : any) => {
-    //             this.module = module
-    //             this.modules = module?.module?.modules
-    //             this.lists = module?.module?.lists
-    //             this.lockers = module?.module?.lockers
-    //           },
-    //           (error) => {
-    //             console.log(error)
-    //           })
-    //         }
-    //       }
-    //   })
-    //   });
-
-
-
   }
 
   closeModal(type : string ) {
+    console.log(this.listToShow)
     this.renderer.setStyle(this.document.body, 'overflow', 'auto')
     type == "module" && this.showModal.set(false)
     type == 'list' && this.showModalList.set(false)
-    type == 'task' && this.showModalListTask.set(false)
+    type == 'task' && this.listToShow?.lockerTasks && this.showModalListTask.set(false)
+    type == 'task' && this.listToShow?.listTasks && this.showInputListTask.set(false)
     type == 'showTask' && this.showTask.set(false)
     type == 'delete' && this.showDelete.set(false)
 
@@ -246,7 +208,10 @@ export class HomeComponent implements OnInit{
     })
     }
 
-    type == 'task' && !deleteE  && this.showModalListTask.set(true)
+    type == 'task' && !deleteE && this.listToShow?.lockerTasks  && this.showModalListTask.set(true)
+
+    type == 'task' && !deleteE && this.listToShow?.listTasks  && this.showInputListTask.set(true)
+
 
     if (type == 'showTask' && !deleteE ) {
       this.showTask.set(true)
@@ -265,9 +230,9 @@ export class HomeComponent implements OnInit{
   async createNewEntity(){
 
     if(!this.formularioModule.valid){
+      this.formularioModule.markAllAsTouched();
       return
     }
-
     if(!this.id){
       this._entityService.createEntityInUser(this.formularioModule.value, this.user?.user?.id).
       subscribe( data => {
@@ -302,13 +267,21 @@ export class HomeComponent implements OnInit{
     this.closeModal("module")
 
   }
-  createNewTask () {
-    if(!this.formularioListTask.valid){
+  createNewTask (type : string) {
+
+    console.log(this.formularioListCheck)
+    console.log(this.formularioListTask)
+    if(type == 'locker' && !this.formularioListTask.valid){
+      this.formularioModule.markAllAsTouched();
+      return
+    }
+    if(type == 'list' && !this.formularioListCheck.valid){
+      this.formularioModule.markAllAsTouched();
       return
     }
     if(this.listToShow?.listTasks){
-      this.formularioListTask.value.listId = this.listToShow.id
-      this._entityService.createTasks(this.formularioListTask.value, 'list').subscribe(data => {
+      this.formularioListCheck.value.listId = this.listToShow.id
+      this._entityService.createTasks(this.formularioListCheck.value, 'list').subscribe(data => {
         this._entityService.getListById( 'list', this.listToShow.id).
     subscribe( (data : any) => {
       this.listToShow = data
@@ -335,6 +308,9 @@ export class HomeComponent implements OnInit{
   hasErrorsTasks( controlName : string, errorType : string ) {
     return this.formularioListTask?.get(controlName)?.hasError(errorType) && this.formularioListTask?.get(controlName)?.touched
   }
+  hasErrorsTasksCheck( controlName : string, errorType : string ) {
+    return this.formularioListCheck?.get(controlName)?.hasError(errorType) && this.formularioListCheck?.get(controlName)?.touched
+  }
 
   isUrl(text: string) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -348,20 +324,68 @@ export class HomeComponent implements OnInit{
     }
   }
 
+  updateStatus (event : Event, id : string ) {
+    const target = event.target as HTMLInputElement;
+
+    if (target.checked) {
+      // console.log(id)
+      this._entityService.updateEntity('list-task', id, { status : 'done'}).
+      subscribe( data => 'done' );
+    } else {
+      this._entityService.updateEntity('list-task', id, { status : 'pending'}).
+      subscribe( data => "pending" );
+    }
+  }
+
   deleteEntity () {
-    if(this.entityToDelete.id && this.entityToDelete.type){
-      this._entityService.deleteEntity(this.entityToDelete?.type, this.entityToDelete?.id).
-      subscribe(data => {
-        if(data){
-          this._userService.getUserById(this.tokensDecoded?.accesTokenDecoded?.id).
-          subscribe( (response : any) => {
-            this.storeUser.dispatch(updateUserMain({ user : response}))
-          }, (error) => {
+
+    if(this.entityToDelete.type == 'list' || this.entityToDelete.type == 'module' || this.entityToDelete.type == 'locker'){
+      if(this.entityToDelete.id && this.entityToDelete.type){
+        this._entityService.deleteEntity(this.entityToDelete?.type, this.entityToDelete?.id).
+        subscribe(data => {
+          if(data){
+            this._userService.getUserById(this.tokensDecoded?.accesTokenDecoded?.id).
+            subscribe( (response : any) => {
+              this.storeUser.dispatch(updateUserMain({ user : response}))
+            }, (error) => {
+              console.log(error)
+            })
+          }
+        })
+      }
+    }
+
+    if( this.entityToDelete.type ==  'list-task' || this.entityToDelete.type == 'locker-task'){
+      if(this.entityToDelete.id && this.entityToDelete.type){
+        this._entityService.deleteEntity(this.entityToDelete?.type, this.entityToDelete?.id).
+        subscribe((data : any) => {
+          if( data?.listId){
+            this._entityService.getListById('list', data.listId ).
+            subscribe( (data : any) => {
+              this.listToShow = data
+            },
+          (error) => {
             console.log(error)
           })
-        }
+          }
+          if( data?.lockerId){
+            this._entityService.getListById('locker', data.lockerId ).
+            subscribe( (data : any) => {
+              this.listToShow = data
+            },
+          (error) => {
+            console.log(error)
+          })
+          }
+
+        },
+      (error) => {
+        console.log(error)
       })
+      }
     }
+
+
 
     this.closeModal("delete")
 

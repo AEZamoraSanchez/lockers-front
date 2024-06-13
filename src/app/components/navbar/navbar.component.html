@@ -1,19 +1,19 @@
 <nav #navElement>
 
-    <h2 [routerLink]="['']" routerLinkActive="router-link-active">Lockers</h2>
+  <h2 [routerLink]="['']" routerLinkActive="router-link-active">Lockers</h2>
 
-    <img (click)="showMenu()" src="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg">
+  <img (click)="showMenu()" src="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg">
 
-    @if(navMenu()){
-      <div>
-        <h4>
-          {{ user?.user?.username }}
-        </h4>
-        <button (click)="cerrarSesion()">
-          Log-out
-        </button>
+  @if(navMenu()){
+    <div>
+      <h4>
+        {{ user?.user?.username }}
+      </h4>
+      <button (click)="cerrarSesion()">
+        Log-out
+      </button>
 
-      </div>
-    }
+    </div>
+  }
 
 </nav>

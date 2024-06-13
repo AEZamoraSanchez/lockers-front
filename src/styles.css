@@ -5,6 +5,7 @@
 textarea {
   max-height: 60px;
   min-height: 40px;
+
 }
 
 html, body { height: 100%; }
