@@ -1,15 +1,16 @@
 main {
+  height: 100%;
   padding: 15px 10px;
   display: grid;
-  background-color: aqua;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   grid-template-rows: repeat(auto-fill, minmax(160px, 1fr));
   gap: 10px;
-  min-height: 100vh;
+  background-color: rgb(230, 241, 255);
 }
 
 section {
-  background-color: antiquewhite;
+  background-color: rgb(185, 215, 255);
+  border: 2px solid rgb(56, 113, 187);
   aspect-ratio: 1/1;
   border-radius: 10px;
   cursor: pointer;
@@ -22,6 +23,7 @@ section {
 
 h2 {
   place-self: center;
+  justify-self: center;
   word-break: break-all;
   font-size: 20px;
   font-weight: 580;

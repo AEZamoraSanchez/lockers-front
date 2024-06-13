@@ -8,8 +8,29 @@ textarea {
 
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html {
+  min-height: 100%;
+  background-color: rgb(230, 241, 255);
+
+}
+body {
+  margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+  min-height: 100vh;
+  background-color: rgb(230, 241, 255);
+
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+app-home {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
 /* based on angular-toastr css https://github.com/Foxandxss/angular-toastr/blob/cb508fe6801d6b288d3afc525bb40fee1b101650/dist/angular-toastr.css */
 
