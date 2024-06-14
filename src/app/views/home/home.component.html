@@ -73,47 +73,47 @@
 <div (click)="closeModal('list')" *ngIf="showModalList()" class="modal-container">
   <div (click)="$event.stopPropagation()" class="modal-content max-w-[600px] max-h-[80vh] min-h-[50vh] overflow-auto">
     <fa-icon [icon]="faCircleXmark" (click)="closeModal('list')" class="top-[5px] right-[5px] text-[25px]"/>
-    <div class="flex flex-col p-[10px] bg-red-400 rounded-[10px]">
-      <h4 *ngIf="listToShow?.title" class="text-[30px]">{{ listToShow?.title}}</h4>
-      <h5 *ngIf="listToShow?.description" class="text-[20px]">{{ listToShow?.description}}</h5>
+    <div class="flex flex-col p-[10px] rounded-[7px] title">
+      <h4 *ngIf="listToShow?.title" class="text-[30px] text-blue-50">{{ listToShow?.title}}</h4>
+      <h5 *ngIf="listToShow?.description" class="text-[20px] text-blue-50">{{ listToShow?.description}}</h5>
     </div>
     <div class="flex flex-col gap-[10px] py-[10px]">
-      <div class="bg-orange-300 w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s]" (click)="openModal('task')">
+      <div class="w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:scale-[1.05] duration-[.5s] segments" (click)="openModal('task')">
         +New
-      </div>
+        </div>
+          <form class="flex gap-[5px]" *ngIf="showInputListTask()" [formGroup]="formularioListCheck" (ngSubmit)="createNewTask('list')">
+            <div class="w-[74%]">
+              <input formControlName="title" autofocus type="text" class="px-[10px] py-[5px] rounded-[5px] w-[100%]">
+              <mat-error class="text-red-700" *ngIf="hasErrorsTasksCheck('title', 'required')">
+                Title is required
+              </mat-error>
+              <mat-error class="text-red-700" *ngIf="hasErrorsTasksCheck('title', 'maxlength')">
+                title length must be less than 25             </mat-error>
+            </div>
+            <button class="w-[13%] rounded-[5px] cursor-pointer hover:scale-[1.1] duration-[.5s] flex justify-center items-center max-h-[34px] segments" >
+              <fa-icon [icon]="faCheck" class="text-[20px]" />
+            </button>
+            <div class="w-[13%] rounded-[5px] cursor-pointer hover:scale-[1.1] duration-[.5s] flex justify-center items-center max-h-[34px] segments" (click)="showInputListTask.set(false) ">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+            </div>
+          </form>
       <ng-container *ngIf="listToShow && listToShow?.listTasks" >
         <div class="flex gap-[5px]" *ngFor="let task of listToShow.listTasks">
-          <label class="bg-orange-300 w-[87%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s] flex justify-between" >
+          <label class="w-[87%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:scale-[1.05] duration-[.5s] flex justify-between segments" >
             {{ task.title}}
             <input type="checkbox" class="w-[25px]" (change)="updateStatus($event, task.id)" [checked]="task.status == 'done'">
           </label>
-          <div class="bg-orange-300 w-[13%] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.1] duration-[.5s] flex justify-center items-center	" (click)="openModal('list-task', task.id, null, true)">
+          <div class="w-[13%] rounded-[5px] cursor-pointer hover:scale-[1.1] duration-[.5s] flex justify-center items-center segments" (click)="openModal('list-task', task.id, null, true) ">
             <fa-icon [icon]="faTrashCan" class="text-[20px]" />
             </div>
             </div>
-            <form class="flex gap-[5px]" *ngIf="showInputListTask()" [formGroup]="formularioListCheck" (ngSubmit)="createNewTask('list')">
-              <div class="w-[74%]">
-                <input formControlName="title" autofocus type="text" class="px-[10px] py-[5px] rounded-[5px] w-[100%]">
-                <mat-error class="text-red-700" *ngIf="hasErrorsTasksCheck('title', 'required')">
-                  Title is required
-                </mat-error>
-                <mat-error class="text-red-700" *ngIf="hasErrorsTasksCheck('title', 'maxlength')">
-                  title length must be less than 25             </mat-error>
-              </div>
-              <button class="bg-orange-300 w-[13%] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.1] duration-[.5s] flex justify-center items-center max-h-[34px]" >
-                <fa-icon [icon]="faCheck" class="text-[20px]" />
-              </button>
-              <div class="bg-orange-300 w-[13%] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.1] duration-[.5s] flex justify-center items-center max-h-[34px]" (click)="showInputListTask.set(false)">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
-              </div>
-            </form>
       </ng-container>
       <ng-container *ngIf="listToShow && listToShow?.lockerTasks" >
         <div class="flex gap-[5px]" *ngFor="let task of listToShow.lockerTasks">
-          <div class="bg-orange-300 w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.05] duration-[.5s]"  (click)="openModal('showTask', null, task)">
+          <div class="w-[100%] px-[10px] py-[5px] rounded-[5px] cursor-pointer hover:scale-[1.05] duration-[.5s] segments"  (click)="openModal('showTask', null, task)">
             {{ task.title}}
           </div>
-          <div class="bg-orange-300 w-[13%] rounded-[5px] cursor-pointer hover:bg-orange-500 hover:scale-[1.1] duration-[.5s] flex justify-center items-center	" (click)="openModal('locker-task', task.id, null, true)">
+          <div class="w-[13%] rounded-[5px] cursor-pointer hover:scale-[1.1] duration-[.5s] flex justify-center items-center	 segments" (click)="openModal('locker-task', task.id, null, true)">
             <fa-icon [icon]="faTrashCan" class="text-[20px]" />
           </div>
         </div>

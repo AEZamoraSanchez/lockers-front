@@ -63,7 +63,8 @@ h3{
 
 .modal-content {
   position : relative;
-  background-color: aquamarine;
+  background-color: rgb(197, 222, 255);
+  border: 2px solid rgb(38, 99, 179);
   width: 90%;
   border-radius: 8px;
   padding: 35px 20px;
@@ -98,4 +99,16 @@ fa-icon {
 svg {
   width: 25px;
   height: 25px;
+}
+
+.title {
+  background-color: rgb(43, 117, 235);
+}
+
+.segments {
+  background-color: rgb(147 197 253);
+
+  &:hover{
+    background-color: rgb(119, 178, 246)
+  }
 }
