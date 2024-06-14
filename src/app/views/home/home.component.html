@@ -9,7 +9,7 @@
   <ng-container *ngIf="modules">
     <section *ngFor="let module of modules" [routerLink]="['/', module?.id]" routerLinkActive="router-link-active">
         <fa-icon [icon]="faCircleXmark" (click)="openModal('module', module.id, null, true)" (click)="$event.stopPropagation()" class="text-[22px] z-50 absolute top-[5px] right-[10px] rounded-[50%] hover:bg-yellow-100 aspect-square	" />
-      <h2>{{module?.title}}</h2>
+      <h2 class="text-[20px] font-[580]">{{module?.title}}</h2>
       <h3>Mod</h3>
 
     </section>
@@ -18,7 +18,7 @@
   <ng-container *ngIf="lists">
     <section *ngFor="let list of lists" (click)="openModal('list', list?.id)">
       <fa-icon [icon]="faCircleXmark" (click)="openModal('list', list.id, null, true)" (click)="$event.stopPropagation()" class="text-[22px] z-50 absolute top-[5px] right-[10px] rounded-[50%] hover:bg-yellow-100 aspect-square	" />
-      <h2>{{list?.title}}</h2>
+      <h2 class="text-[20px] font-[580]">{{list?.title}}</h2>
       <h3>Li</h3>
     </section>
   </ng-container>
@@ -26,7 +26,7 @@
   <ng-container *ngIf="lockers">
     <section *ngFor="let locker of lockers" (click)="openModal('locker', locker.id )">
       <fa-icon [icon]="faCircleXmark" (click)="openModal('locker', locker.id, null, true )" (click)="$event.stopPropagation()" class="text-[22px] z-50 absolute top-[5px] right-[10px] rounded-[50%] hover:bg-yellow-100 aspect-square	" />
-      <h2>{{locker?.title}}</h2>
+      <h2 class="text-[20px] font-[580]">{{locker?.title}}</h2>
       <h3>Lo</h3>
     </section>
   </ng-container>
@@ -169,7 +169,7 @@
 <div (click)="closeModal('delete')" *ngIf="showDelete()" class="modal-container">
   <div (click)="$event.stopPropagation()" class="modal-content max-w-[400px] flex flex-col gap-[10px]">
     <fa-icon [icon]="faCircleXmark" (click)="closeModal('delete')" class="top-[5px] right-[5px] text-[25px]"/>
-      <h2 class="justify-self-center text-center text-nowrap">Are you sure you wanna delete it?</h2>
+      <h2 class="justify-self-center text-center text-nowrap text-[20px] font-[580]">Are you sure you wanna delete it?</h2>
       <div class="flex justify-center gap-[8px]">
         <button class="border-2 border-cyan-600" (click)="deleteEntity()">Yes</button>
         <button class="bg-red-400 text-white" (click)="closeModal('delete')">Cancel</button>
