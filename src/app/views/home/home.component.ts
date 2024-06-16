@@ -101,7 +101,7 @@ export class HomeComponent implements OnInit{
 
     this.formularioListTask = this.form.group({
       title : ['', [Validators.required, Validators.maxLength(35)]],
-      description : ['', [Validators.required, Validators.maxLength(100)]]
+      description : ['', [Validators.required, Validators.maxLength(300)]]
     })
 
     this.formularioListCheck = this.form.group({
