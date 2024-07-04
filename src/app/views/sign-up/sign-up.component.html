@@ -1,4 +1,5 @@
 <app-auth-template>
+  <div class="flex flex-col justify-center h-[100%] sm:gap-[10px] md:gap-[15px]">
   <h2 class="text-[5.5vh] text-white text-center z-10">LOCKERS</h2>
   <form class="flex flex-col w-[100%] py-[15px] items-center sm:gap-[15px] z-10" [formGroup]="formularioSign" (ngSubmit)="submitForm()">
 
@@ -28,13 +29,13 @@
 </form>
 
 <div class="w-full grid grid-cols-2 z-10">
-  <p class="text-white text-[1.7vh] text-center	hover:cursor-pointer w-fit justify-self-center" [routerLink]="['/login']" routerLinkActive="router-link-active">Ya cuentas con alguna cuenta?</p>
-  <p class="text-white text-[1.7vh] text-center	hover:cursor-pointer w-fit justify-self-center">Ingresa como invitado</p>
+  <p class="text-white text-[1.7vh] text-center	hover:cursor-pointer w-fit justify-self-center" [routerLink]="['/login']" routerLinkActive="router-link-active">Do you have an account?</p>
+  <p class="text-white text-[1.7vh] text-center	hover:cursor-pointer w-fit justify-self-center" [routerLink]="['/guest']" routerLinkActive="router-link-active">Log in as a guest</p>
 </div>
 <div class="w-full grid grid-cols-2 h-auto z-10">
   <fa-icon [icon]="faFacebook" class="w-fit text-[7vh] justify-self-center text-white	hover:cursor-pointer" ></fa-icon>
   <fa-icon [icon]="faGoogle" class="w-fit text-[7vh] justify-self-center text-white	hover:cursor-pointer" ></fa-icon>
 </div>
-
-<app-auth-template/>
+</div>
+</app-auth-template>
 

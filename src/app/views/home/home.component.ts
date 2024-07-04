@@ -160,11 +160,11 @@ export class HomeComponent implements OnInit{
                   switchMap((module: any) => {
                     this.storeModule.dispatch(updateModule({ module: module }));
                     return this.module$?.pipe(
-                      switchMap((module: any) => {
-                        this.module = module;
-                        this.modules = module?.module?.modules;
-                        this.lists = module?.module?.lists;
-                        this.lockers = module?.module?.lockers;
+                      switchMap((moduleE: any) => {
+                        this.module = moduleE;
+                        this.modules = moduleE?.module?.modules;
+                        this.lists = moduleE?.module?.lists;
+                        this.lockers = moduleE?.module?.lockers;
                         return of(null);
                       })
                     ) || EMPTY;
@@ -186,7 +186,7 @@ export class HomeComponent implements OnInit{
   }
 
   closeModal(type : string ) {
-    console.log(this.listToShow)
+    // console.log(this.listToShow)
     this.renderer.setStyle(this.document.body, 'overflow', 'auto')
     type == "module" && this.showModal.set(false)
     type == 'list' && this.showModalList.set(false)

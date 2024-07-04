@@ -73,7 +73,7 @@ export class SignUpComponent implements OnInit {
       this.clearToast()
       this.toastr.success('User successfully created', undefined, { timeOut: 750 })
       setTimeout(() => {
-        this.router.navigate([''])
+        this.router.navigate(['login'])
       }, 1000)
     },
    error => {
@@ -84,6 +84,5 @@ export class SignUpComponent implements OnInit {
   clearToast() {
     this.toastr.clear()
   }
-
 
 }

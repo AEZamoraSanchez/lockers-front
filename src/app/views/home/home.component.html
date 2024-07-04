@@ -7,7 +7,7 @@
 
   </section>
   <ng-container *ngIf="modules">
-    <section *ngFor="let module of modules" [routerLink]="['/', module?.id]" routerLinkActive="router-link-active">
+    <section *ngFor="let module of modules" [routerLink]="['/module', module?.id]" routerLinkActive="router-link-active">
         <fa-icon [icon]="faCircleXmark" (click)="openModal('module', module.id, null, true)" (click)="$event.stopPropagation()" class="text-[22px] z-50 absolute top-[5px] right-[10px] rounded-[50%] hover:bg-yellow-100 aspect-square	" />
       <h2 class="text-[20px] font-[580]">{{module?.title}}</h2>
       <h3>Mod</h3>

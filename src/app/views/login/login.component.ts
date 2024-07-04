@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit {
       this.clearToast()
       this.toastr.success('Logged in', undefined, { timeOut : 750 })
       setTimeout(() => {
-        this.router.navigate(['']);
+        this.router.navigate(['/home']);
       }, 1000)
     },
     (error) => {
