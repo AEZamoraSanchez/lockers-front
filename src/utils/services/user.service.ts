@@ -16,4 +16,8 @@ export class UserService {
   getUserById ( id : string ) {
     return this.http.get(`${this.urlBackend}/user/${id}`, {headers: this.headers})
   }
+
+  getUserById2 ( id : string ) : Promise<any> {
+    return this.http.get(`${this.urlBackend}/user/${id}`, {headers: this.headers}).toPromise()
+  }
 }

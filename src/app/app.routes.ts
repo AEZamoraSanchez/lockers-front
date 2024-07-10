@@ -6,13 +6,14 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { GuestComponent } from './views/guest/guest.component';
+import { ModuleeComponent } from './views/modulee/modulee.component';
 
 export const routes: Routes = [
   // { path: '', redirectTo: 'sign-up', pathMatch: 'full' },
     {path: "sign-up", component: SignUpComponent},
     {path: "login", component: LoginComponent},
     {path: "home", component: HomeComponent},
-    {path: "module/:id", component: HomeComponent},
+    {path: "module/:id", component: ModuleeComponent},
     {path: "guest", component: GuestComponent},
     {path: "**", redirectTo:'home'}
 ];

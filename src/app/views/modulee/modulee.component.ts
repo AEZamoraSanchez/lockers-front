@@ -1,29 +1,29 @@
-import { Component, OnInit, signal, Renderer2, Inject} from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import { StorageService } from '../../../utils/services/storage.service';
-import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router';
-import { UserService } from '../../../utils/services/user.service';
-import { EMPTY, Observable, catchError, of, switchMap, tap } from 'rxjs';
+import { Component, Inject, OnInit, Renderer2, signal } from '@angular/core';
+import { catchError, EMPTY, Observable, of, switchMap } from 'rxjs';
 import { userMain } from '../../../utils/interfaces/userInterfaces/userMain.interface';
-import { Store, StoreModule, select } from '@ngrx/store';
-import { updateUserMain, verReducer } from '../../../stores/userStore/user.actions';
-import { CommonModule } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faEllipsisV, faCheck } from '@fortawesome/free-solid-svg-icons';
-import { faCircleXmark, faTrashCan, faSquareCheck} from '@fortawesome/free-regular-svg-icons';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import {EntityService } from '../../../utils/services/entities.service';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { ModuleInterface } from '../../../utils/interfaces/entitiesInterfaces/module.interface';
-import { updateModule } from '../../../stores/moduleStore/module.actions';
 import { ListInterface } from '../../../utils/interfaces/entitiesInterfaces/list.interface';
 import { LockerInterface } from '../../../utils/interfaces/entitiesInterfaces/locker.interface';
+import { faCheck, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark, faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { StorageService } from '../../../utils/services/storage.service';
+import { UserService } from '../../../utils/services/user.service';
+import { select, Store } from '@ngrx/store';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { EntityService } from '../../../utils/services/entities.service';
+import { ActivatedRoute, ParamMap, RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { updateUserMain } from '../../../stores/userStore/user.actions';
+import { updateModule } from '../../../stores/moduleStore/module.actions';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-modulee',
   standalone: true,
   imports: [
     CommonModule,
@@ -34,14 +34,13 @@ import { ToastrService } from 'ngx-toastr';
     MatFormFieldModule,
     RouterModule
   ],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  templateUrl: './modulee.component.html',
+  styleUrl: './modulee.component.css'
 })
-export class HomeComponent implements OnInit{
+export class ModuleeComponent implements OnInit {
 
-  user$ ? : Observable<userMain | null>
-  module$ ? : Observable<ModuleInterface | null>
   user : any;
+  userExist: boolean = false;
   module : any;
   listToShow ? : any;
   taskToShow ? : any;
@@ -81,17 +80,13 @@ export class HomeComponent implements OnInit{
   constructor(
     private _storageService: StorageService,
     private _userService : UserService,
-    private storeUser : Store<{ user : userMain | null}>,
-    private storeModule : Store<{ module : ModuleInterface | null}>,
     private renderer : Renderer2,
     @Inject(DOCUMENT) private document : Document,
     private form : FormBuilder,
     private _entityService : EntityService,
     private route : ActivatedRoute,
-    private toastr : ToastrService
+    private toastr : ToastrService,
   ){
-    this.user$ = this.storeUser.pipe(select('user'))
-    this.module$ = this.storeModule.pipe(select('module'))
 
     this.formularioModule = this.form.group({
       type : ['', Validators.required],
@@ -130,13 +125,27 @@ export class HomeComponent implements OnInit{
 
     try {
       const user = await this._userService.getUserById2(tokensDecoded?.accesTokenDecoded?.id)
-
       this.user = user
 
-    } catch (error : any) {
-      this.toastr.error(error?.error?.message);
-    }
+      this.route.paramMap.
+      subscribe( (params : ParamMap) => {
+        const id = (params.get('id'))
+        this.id = id
+        // console.log(user)
+        id && this._entityService.getModuleById(id, user.id).subscribe( ( moduleE : any ) => {
+          // console.log(moduleE)
+          this.module = moduleE
+        },
+      (error) => {
+        this.toastr.error(error?.error?.message)
+      })
 
+      })
+
+    }
+    catch (error : any) {
+      this.toastr.error(error?.error?.message)
+    }
   }
 
   closeModal(type : string ) {
@@ -186,19 +195,23 @@ export class HomeComponent implements OnInit{
       this.formularioModule.markAllAsTouched();
       return
     }
-      this._entityService.createEntityInUser(this.formularioModule.value, this.user?.id).
+
+      this.id && this._entityService.createEntityInModule(this.formularioModule?.value, this.id, this.user?.id ).
       subscribe( data => {
-        if(data){
-          this._userService.getUserById(this.tokensDecoded?.accesTokenDecoded?.id).
-          subscribe( (response : any) => {
-            this.user = response
-          }, (error) => {
+        if ( data && this.id){
+          this._entityService.getModuleById(this.id, this.user?.id).
+          subscribe( (module : any) => {
+            this.module = module
+            this.toastr.success('Entity created successfully')
+          },
+          (error) => {
             console.log(error)
           })
         }
-      }, (error) => {
-        console.log(error)
-      })
+      },
+    (error) => {
+      console.log(error)
+    })
 
     this.closeModal("module")
 
@@ -277,10 +290,10 @@ export class HomeComponent implements OnInit{
       if(this.entityToDelete.id && this.entityToDelete.type){
         this._entityService.deleteEntity(this.entityToDelete?.type, this.entityToDelete?.id).
         subscribe(data => {
-          if(data){
-            this._userService.getUserById(this.tokensDecoded?.accesTokenDecoded?.id).
+          if(data && this.id){
+            this._entityService.getModuleById(this.id, this.tokensDecoded?.accesTokenDecoded?.id).
             subscribe( (response : any) => {
-              this.user = response
+              this.module = response
             }, (error) => {
               console.log(error)
             })
@@ -324,7 +337,5 @@ export class HomeComponent implements OnInit{
     this.closeModal("delete")
 
   }
-
-
 
 }

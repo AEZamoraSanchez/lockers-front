@@ -4,8 +4,8 @@
     <h2 class="text-[49px] font-normal">+New</h2>
 
   </section>
-  <ng-container *ngIf="modules">
-    <section *ngFor="let module of modules" [routerLink]="['/module', module?.id]" routerLinkActive="router-link-active">
+  <ng-container *ngIf="module">
+    <section *ngFor="let module of module?.modules" [routerLink]="['/module', module?.id]" routerLinkActive="router-link-active">
         <fa-icon [icon]="faCircleXmark" (click)="openModal('module', module.id, null, true)" (click)="$event.stopPropagation()" class="text-[22px] z-50 absolute top-[5px] right-[10px] rounded-[50%] hover:bg-yellow-100 aspect-square	" />
       <h2 class="text-[20px] font-[580]">{{module?.title}}</h2>
       <h3>Mod</h3>
@@ -14,7 +14,7 @@
   </ng-container>
 
   <ng-container *ngIf="lists">
-    <section *ngFor="let list of lists" (click)="openModal('list', list?.id)">
+    <section *ngFor="let list of module?.lists" (click)="openModal('list', list?.id)">
       <fa-icon [icon]="faCircleXmark" (click)="openModal('list', list.id, null, true)" (click)="$event.stopPropagation()" class="text-[22px] z-50 absolute top-[5px] right-[10px] rounded-[50%] hover:bg-yellow-100 aspect-square	" />
       <h2 class="text-[20px] font-[580]">{{list?.title}}</h2>
       <h3>Li</h3>
@@ -22,7 +22,7 @@
   </ng-container>
 
   <ng-container *ngIf="lockers">
-    <section *ngFor="let locker of lockers" (click)="openModal('locker', locker.id )">
+    <section *ngFor="let locker of module?.lockers" (click)="openModal('locker', locker.id )">
       <fa-icon [icon]="faCircleXmark" (click)="openModal('locker', locker.id, null, true )" (click)="$event.stopPropagation()" class="text-[22px] z-50 absolute top-[5px] right-[10px] rounded-[50%] hover:bg-yellow-100 aspect-square	" />
       <h2 class="text-[20px] font-[580]">{{locker?.title}}</h2>
       <h3>Lo</h3>
