@@ -14,23 +14,23 @@ html {
 
 body {
   margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+  height: 100svh;
+  /* display: flex;
+  flex-direction: column; */
   background-color: rgb(230, 241, 255);
 
 }
 
+app-root {
+  height: 100%;
+}
+
 app-login {
-  flex: 1;
-  min-height: 0;
-  flex-direction: column;
+  height: 100%;
 }
 
 app-auth-template {
-  flex: 1;
-  min-height: 0;
-  flex-direction: column;
+  height: 100%;
 }
 /*
 app-sign-up {
